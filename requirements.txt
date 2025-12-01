@@ -4,3 +4,4 @@ openai
 rich
 python-dotenv
 streamlit
+langgraph
