@@ -32,7 +32,7 @@ if mode == "Standard (Hybrid)":
     st.markdown("### ⚡ Standard Mode")
     st.markdown("Deterministic scanning with AI verification. Fast and predictable.")
 else:
-    st.markdown("### 🤖 Agentic Mode (Extra Credit)")
+    st.markdown("### 🤖 Agentic Mode")
     st.markdown("Autonomous Agent using **LangGraph**. It plans tasks, uses tools, and manages memory.")
 
 # File Uploader

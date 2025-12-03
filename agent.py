@@ -34,6 +34,26 @@ class SecurityAgent:
         data = f"{candidate['type']}:{candidate['code_snippet']}"
         return hashlib.md5(data.encode()).hexdigest()
 
+    def analyze_single_candidate(self, candidate):
+        """
+        Analyzes a single candidate with caching support.
+        Returns the verdict dictionary.
+        """
+        sig = self._generate_signature(candidate)
+        
+        if self.use_cache and sig in self.cache:
+            print(f"[*] Cache Hit! Skipping API call for {candidate['type']}.")
+            verdict = self.cache[sig]
+        else:
+            print(f"[*] Analyzing {candidate['type']}...")
+            verdict = self._assess_vulnerability(candidate)
+            # Save to cache
+            if self.use_cache:
+                self.cache[sig] = verdict
+                self._save_cache()
+        
+        return verdict
+
     def analyze_candidates(self, candidates):
         verified_findings = []
         total = len(candidates)
@@ -41,18 +61,8 @@ class SecurityAgent:
         print(f"[*] Agent starting analysis on {total} candidates...")
         
         for index, candidate in enumerate(candidates):
-            # Check Cache First
-            sig = self._generate_signature(candidate)
-            
-            if self.use_cache and sig in self.cache:
-                print(f"    [{index+1}/{total}] Cache Hit! Skipping API call.")
-                verdict = self.cache[sig]
-            else:
-                print(f"    [{index+1}/{total}] Analyzing {candidate['type']} in {os.path.basename(candidate['file'])}...")
-                verdict = self._assess_vulnerability(candidate)
-                # Save to cache
-                if self.use_cache:
-                    self.cache[sig] = verdict
+            # Use the caching-aware method
+            verdict = self.analyze_single_candidate(candidate)
             
             if verdict['is_vulnerable']:
                 candidate['analysis'] = verdict['reasoning']

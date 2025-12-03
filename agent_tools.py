@@ -43,7 +43,8 @@ def verify_vulnerability(code_snippet: str, vulnerability_type: str):
         "code_snippet": code_snippet
     }
     
-    result = verifier_instance._assess_vulnerability(candidate)
+    # Use analyze_single_candidate which includes caching support
+    result = verifier_instance.analyze_single_candidate(candidate)
     return json.dumps(result)
 
 @tool
